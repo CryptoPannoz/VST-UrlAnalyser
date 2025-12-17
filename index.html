@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Content Analyzer</title>
+    <style>
+        body { font-family: sans-serif; padding: 40px; max-width: 500px; margin: auto; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; }
+        input, select, button { width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; }
+        button { background-color: #ff6d5a; color: white; border: none; cursor: pointer; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h2>Analizzatore Vertical Sailing</h2>
+    
+    <div class="form-group">
+        <label>URL da analizzare:</label>
+        <input type="url" id="urlInput" placeholder="https://example.com..." required>
+    </div>
+
+    <div class="form-group">
+        <label>Categoria:</label>
+        <select id="categorySelect">
+            <option value="BLOG">BLOG</option>
+            <option value="IDEAS">IDEAS</option>
+            <option value="COMPETITOR">COMPETITOR</option>
+        </select>
+    </div>
+
+    <button onclick="sendData()">Avvia Analisi</button>
+
+    <p id="status"></p>
+
+    <script>
+        async function sendData() {
+            const url = document.getElementById('urlInput').value;
+            const category = document.getElementById('categorySelect').value;
+            const status = document.getElementById('status');
+            
+            status.innerText = "Invio in corso...";
+
+            try {
+                const response = await fetch('IL_TUO_WEBHOOK_URL_N8N', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url: url, category: category })
+                });
+
+                if (response.ok) {
+                    status.innerText = "✅ Dati inviati con successo!";
+                } else {
+                    status.innerText = "❌ Errore durante l'invio.";
+                }
+            } catch (error) {
+                status.innerText = "❌ Errore di connessione.";
+            }
+        }
+    </script>
+</body>
+</html>
