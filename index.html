@@ -2,60 +2,164 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>AI Content Analyzer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Content Analyzer | Vertical Sailing Tour</title>
     <style>
-        body { font-family: sans-serif; padding: 40px; max-width: 500px; margin: auto; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; }
-        input, select, button { width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; }
-        button { background-color: #ff6d5a; color: white; border: none; cursor: pointer; font-weight: bold; }
+        :root {
+            --primary: #ff6d5a;
+            --primary-hover: #e55b4a;
+            --bg: #f4f7f9;
+            --text: #333;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h2 { margin-top: 0; color: var(--primary); font-size: 1.5rem; }
+        
+        .form-group { margin-bottom: 1.2rem; }
+        
+        label { display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; }
+        
+        input, select { 
+            width: 100%; 
+            padding: 12px; 
+            border-radius: 8px; 
+            border: 1px solid #ddd; 
+            box-sizing: border-box;
+            transition: border 0.3s;
+        }
+
+        input:focus { border-color: var(--primary); outline: none; }
+
+        button { 
+            width: 100%; 
+            padding: 12px; 
+            border-radius: 8px; 
+            border: none; 
+            background-color: var(--primary); 
+            color: white; 
+            font-weight: bold; 
+            font-size: 1rem;
+            cursor: pointer; 
+            transition: background 0.3s, transform 0.1s;
+        }
+
+        button:hover { background-color: var(--primary-hover); }
+        button:active { transform: scale(0.98); }
+        button:disabled { background-color: #ccc; cursor: not-allowed; }
+
+        /* Feedback Styles */
+        #status { 
+            margin-top: 1.5rem; 
+            padding: 10px; 
+            border-radius: 6px; 
+            text-align: center; 
+            font-size: 0.9rem;
+            display: none; 
+        }
+
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 10px;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        .success { background-color: #d4edda; color: #155724; display: block !important; }
+        .error { background-color: #f8d7da; color: #721c24; display: block !important; }
     </style>
 </head>
 <body>
-    <h2>Analizzatore Vertical Sailing</h2>
+
+<div class="card">
+    <h2>🚀 Content Analyzer</h2>
     
     <div class="form-group">
-        <label>URL da analizzare:</label>
-        <input type="url" id="urlInput" placeholder="https://example.com..." required>
+        <label>URL da analizzare</label>
+        <input type="url" id="urlInput" placeholder="https://esempio.com..." required>
     </div>
 
     <div class="form-group">
-        <label>Categoria:</label>
+        <label>Tipo di Analisi</label>
         <select id="categorySelect">
-            <option value="BLOG">BLOG</option>
-            <option value="IDEAS">IDEAS</option>
-            <option value="COMPETITOR">COMPETITOR</option>
+            <option value="BLOG">📝 Scrivi BLOG Post</option>
+            <option value="IDEAS">💡 Genera IDEE Sviluppo</option>
+            <option value="COMPETITOR">🕵️ Analisi COMPETITOR</option>
         </select>
     </div>
 
-    <button onclick="sendData()">Avvia Analisi</button>
+    <button id="submitBtn" onclick="sendData()">Avvia Analisi</button>
 
-    <p id="status"></p>
+    <div id="status"></div>
+</div>
 
-    <script>
-        async function sendData() {
-            const url = document.getElementById('urlInput').value;
-            const category = document.getElementById('categorySelect').value;
-            const status = document.getElementById('status');
-            
-            status.innerText = "Invio in corso...";
-
-            try {
-                const response = await fetch('IL_TUO_WEBHOOK_URL_N8N', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ url: url, category: category })
-                });
-
-                if (response.ok) {
-                    status.innerText = "✅ Dati inviati con successo!";
-                } else {
-                    status.innerText = "❌ Errore durante l'invio.";
-                }
-            } catch (error) {
-                status.innerText = "❌ Errore di connessione.";
-            }
+<script>
+    async function sendData() {
+        const urlField = document.getElementById('urlInput');
+        const btn = document.getElementById('submitBtn');
+        const status = document.getElementById('status');
+        
+        if (!urlField.value) {
+            alert("Inserisci un URL valido");
+            return;
         }
-    </script>
+
+        // Stato di caricamento
+        btn.disabled = true;
+        btn.innerHTML = '<span class="loader"></span>Elaborazione...';
+        status.style.display = 'none';
+
+        try {
+            const response = await fetch('https://verticalsailingtour.app.n8n.cloud/webhook-test/0b095afd-d348-4ca9-a596-0b5875fe2156', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    url: urlField.value, 
+                    category: document.getElementById('categorySelect').value 
+                })
+            });
+
+            if (response.ok) {
+                status.className = 'success';
+                status.innerText = "✅ Analisi avviata! Controlla il Google Sheet tra pochi minuti.";
+                urlField.value = ""; // Pulisce il campo
+            } else {
+                throw new Error();
+            }
+        } catch (error) {
+            status.className = 'error';
+            status.innerText = "❌ Errore di connessione. Riprova.";
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = 'Avvia Analisi';
+        }
+    }
+</script>
+
 </body>
 </html>
